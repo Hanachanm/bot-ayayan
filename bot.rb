@@ -15,10 +15,17 @@ client.on :message do |data|
   case data.text
   when 'こんにちは' then
     client.message channel: data['channel'], text: "<@#{data.user}>さん、こんにちは"
-  when '食事代、200円' then
-    client.message channel: data['channel'], text: '登録しました'
+  when '何時？' then
+    client.message channel: data['channel'], text: "ただ今の時刻は#{Time.now}です"
+  end
+
+  if /(.+)代、(\d+)円/ =~  data.text then
+    client.message channel: data['channel'], text: "#{Time.now}\s#{$1}代として、#{$2}円を登録しました！"
   end
 
 end
 
 client.start!
+
+
+
