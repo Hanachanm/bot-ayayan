@@ -11,16 +11,24 @@ client.on :hello do
   puts "Successfully connected, welcome '#{client.self.name}' to the '#{client.team.name}' team at https://#{client.team.domain}.slack.com."
 end
 
+$usedMoney = 0        #使ったお金の合計
+$allMoney = 50000     #予算
+$balance = 50000      #残っている予算
+$nowMoney = 0         #登録した金額
+
 client.on :message do |data|
   case data.text
   when 'こんにちは' then
     client.message channel: data['channel'], text: "<@#{data.user}>さん、こんにちは"
   when '何時？' then
     client.message channel: data['channel'], text: "ただ今の時刻は#{Time.now}です"
-  end
-
-  if /(.+)代、(\d+)円/ =~  data.text then
+  when /(.+)代、(\d+)円/ then
     client.message channel: data['channel'], text: "#{Time.now}\s#{$1}代として、#{$2}円を登録しました！"
+    $nowMoney = $2.to_i
+    $usedMoney = $usedMoney + $nowMoney
+    $balance = $allMoney - $usedMoney
+  when 'あと何円使える？' then
+    client.message channel: data['channel'], text: "#{$balance}円ダヨ"
   end
 
 end
